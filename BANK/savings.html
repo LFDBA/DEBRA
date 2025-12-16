@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Online Banking — Account Detail (UI Only)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --blue-900:#003b5c;
+      --blue-800:#005f8f;
+      --blue-700:#0077b6;
+      --blue-100:#e8f2f9;
+      --ink-900:#0f172a;
+      --ink-700:#334155;
+      --ink-500:#64748b;
+      --ink-300:#cbd5e1;
+      --surface:#ffffff;
+      --bg:#f6f9fc;
+      --radius:12px;
+      --radius-sm:8px;
+      --shadow:0 1px 2px rgba(0,0,0,.04),0 6px 16px rgba(0,0,0,.08);
+    }
+
+    * { box-sizing:border-box; }
+    html,body { height:100%; }
+    body {
+      margin:0;
+      font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--ink-900);
+      background:var(--bg);
+    }
+
+    /* Top bar & nav same as before */
+    .topbar { background:linear-gradient(0deg,var(--blue-800),var(--blue-900)); color:#fff; }
+    .topbar-inner { max-width:1200px; margin:0 auto; padding:14px 20px; display:flex; align-items:center; justify-content:space-between; gap:16px; }
+    .brand { display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.3px; }
+    .brand-badge { width:250px;height:32px;border-radius:6px; }
+    .top-actions button { background:#198abe;border:none;color:#fff;font-weight:600; padding:10px 14px;border-radius:8px;cursor:pointer; }
+
+    /* Nav */
+    .nav { background:var(--blue-700); }
+    .nav-inner { max-width:1200px;margin:0 auto;padding:0 20px;display:flex;gap:22px; }
+    .nav a { color:#e6f4ff;text-decoration:none;padding:14px 0;font-weight:500; border-bottom:3px solid transparent; }
+    .nav a.active { border-bottom-color:#7dd3fc; }
+
+    /* Banner and account card */
+    .account-hero { position:relative; background:#f0f4f8; padding:24px; border-radius:var(--radius); margin:20px; box-shadow:var(--shadow); display:flex; justify-content:space-between; align-items:center; }
+    .account-info { display:flex; flex-direction:column; gap:6px; }
+    .account-name { font-size:20px; font-weight:600; }
+    .account-number { font-size:14px; color:var(--ink-500); }
+    .account-type { font-size:14px; color:var(--ink-500); }
+    .account-balance { text-align:right; font-size:20px; font-weight:700; }
+    .available { font-size:14px; color:var(--ink-500); }
+    .btn-primary { background:var(--blue-700); color:#fff; border:none; padding:10px 14px; border-radius:8px; cursor:pointer; }
+
+    /* Tabs */
+    .tabs { display:flex; gap:24px; padding:12px 20px; background:var(--blue-100); border-radius:var(--radius-sm); margin:20px; }
+    .tab { padding:10px 12px; cursor:pointer; color:var(--blue-700); border-bottom:3px solid transparent; font-weight:500; }
+    .tab.active { border-bottom-color:var(--blue-700); }
+
+    /* Transaction table */
+    table { width:100%; border-collapse:collapse; margin:20px; background:#fff; border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow); }
+    th, td { padding:12px 14px; text-align:left; border-bottom:1px solid var(--ink-300); }
+    th { background:var(--blue-100); color:var(--blue-900); font-weight:600; }
+    tr:last-child td { border-bottom:none; }
+    .search-filter { display:flex; justify-content:flex-end; gap:12px; margin:20px; align-items: center;}
+    .search-filter input,
+    .search-filter button {
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.4;
+    height: 36px;
+    }
+
+    /* Quick Transfer modal2 */
+    .modal2-backdrop {
+      display:none;
+      position:fixed;
+      top:0; left:0; right:0; bottom:0;
+      background:rgba(0,0,0,0.3);
+      justify-content:center;
+      align-items:center;
+      z-index:1000;
+    }
+    .modal2 {
+      background-color: #fff;
+      padding: 25px 30px;
+      border-radius: 8px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      width: 400px;
+      position: relative;
+    }
+    .modal2 h2 { margin-top: 0; font-size: 1.5em; }
+    .close-btn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      cursor: pointer;
+      font-size: 18px;
+    }
+    label { display:block; margin:15px 0 5px; }
+    select, input[type="text"], input[type="number"] {
+      width:100%;
+      padding:8px;
+      box-sizing:border-box;
+      border-radius:4px;
+      border:1px solid #ccc;
+    }
+    .buttons { margin-top:20px; display:flex; justify-content:flex-start; gap:10px; }
+    .transfer-btn { background-color:#0072c6; color:white; border:none; padding:10px 20px; border-radius:4px; cursor:pointer; }
+    .cancel-btn { background-color:transparent; color:#0072c6; border:none; padding:10px 20px; border-radius:4px; cursor:pointer; }
+
+	/* =========================
+   Terms Agreement Modal
+   ========================= */
+	.modal-backdrop {
+	position: fixed;
+	inset: 0;
+	background: rgba(15, 23, 42, 0.65);
+	backdrop-filter: blur(4px);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 9999;
+	}
+
+	.modal {
+	background: #fff;
+	width: 92%;
+	max-width: 460px;
+	border-radius: 14px;
+	box-shadow: 0 20px 40px rgba(0,0,0,.25);
+	padding: 22px 22px 18px;
+	}
+
+	.modal h2 {
+	margin: 0 0 10px;
+	font-size: 20px;
+	}
+
+	.modal p {
+	margin: 0 0 12px;
+	color: var(--ink-700);
+	line-height: 1.5;
+	font-size: 14px;
+	}
+
+	.modal ul {
+	padding-left: 18px;
+	margin: 10px 0 14px;
+	font-size: 14px;
+	color: var(--ink-700);
+	}
+
+	.modal ul li {
+	margin-bottom: 6px;
+	}
+
+	.modal .terms {
+	font-size: 13px;
+	color: var(--ink-500);
+	margin-bottom: 14px;
+	}
+
+	.modal .terms a {
+	color: var(--blue-700);
+	text-decoration: none;
+	font-weight: 600;
+	}
+
+	.modal-actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 10px;
+	}
+
+	.modal-actions button {
+	padding: 10px 14px;
+	border-radius: 8px;
+	font-weight: 600;
+	cursor: pointer;
+	border: none;
+	}
+
+	.modal-actions .decline {
+	background: #e5e7eb;
+	color: #111827;
+	}
+
+	.modal-actions .accept {
+	background: var(--blue-700);
+	color: #fff;
+	opacity: .5;
+	}
+
+	.modal-actions .accept.enabled {
+	opacity: 1;
+	}
+
+  </style>
+</head>
+<!-- Terms Agreement Modal -->
+<div class="modal-backdrop" id="tosModal">
+  <div class="modal">
+    <h2>Terms of Service</h2>
+    <p>
+      Before continuing, please confirm that you understand and agree to the
+      following important conditions:
+    </p>
+
+    <ul>
+      <li>You acknowledge this service may not behave as expected</li>
+      <li>You agree to waste a non‑recoverable amount of your own time</li>
+      <li>You understand no real money exists on this website</li>
+      <li>You accept that proceeding was entirely your decision</li>
+      <li>You agree to face more-than-mild disappointment</li>
+    </ul>
+
+    <div class="terms">
+      <label>
+        <input type="checkbox" id="agreeCheck">
+        I have read and agree to the
+        <a href="/terms.txt" target="_blank">Terms &amp; Conditions</a>
+      </label>
+    </div>
+
+    <div class="modal-actions">
+      <button class="decline" onclick="location.reload()">Decline</button>
+      <button class="accept" id="acceptBtn" disabled>Agree &amp; Continue</button>
+    </div>
+  </div>
+</div>
+<script>
+  const checkbox = document.getElementById('agreeCheck');
+  const acceptBtn = document.getElementById('acceptBtn');
+  const modal = document.getElementById('tosModal');
+
+  checkbox.addEventListener('change', () => {
+    acceptBtn.disabled = !checkbox.checked;
+    acceptBtn.classList.toggle('enabled', checkbox.checked);
+  });
+
+  acceptBtn.addEventListener('click', () => {
+    modal.style.display = 'none';
+  });
+  function agree(){
+    console.log('SCAMMER!!')
+    modal.style.display = 'flex';
+  }
+</script>
+
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <img class="brand-badge" src="https://secure.anz.co.nz/include/assets/img/svg/brand/anz_logo_gradient.svg">
+      </div>
+      <div class="top-actions"><button>Log off</button></div>
+    </div>
+    <nav class="nav">
+      <div class="nav-inner">
+        <a href="/home.html">Home</a>
+        <a class="active" href="#">Your accounts</a>
+        <a href="#">Pay & transfer</a>
+        <a href="#">Apply & open</a>
+        <a href="#">Settings</a>
+        <a href="#">Documents</a>
+        <a href="#">Messages</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <div class="account-hero">
+      <div class="account-info">
+        <div class="account-name">Savings</div>
+        <div class="account-number">01-0113-6381-10 | Serious Saver</div>
+      </div>
+      <div class="account-balance">
+        $386,890.95
+        <div class="available">Available $386,890.95</div>
+      </div>
+      <button class="btn-primary" id="quickTransferBtn">Quick transfer</button>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active">Transactions</div>
+      <div class="tab">Account details</div>
+      <div class="tab">Statements</div>
+    </div>
+    <label style="position: absolute; right: 255px; top: 40.5%;">Search transactions: <input type="text" placeholder="Search..."></label>
+    <div class="search-filter">
+      
+      <button>Filter ▼</button>
+      <button>Export ▼</button>
+      <button>Print ▼</button>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Type</th>
+          <th>Details</th>
+          <th>Deposits</th>
+          <th>Withdrawals</th>
+          <th>Balance</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+        <td>12 Dec 2025</td>
+        <td>Transfer</td>
+        <td>For Dinner<br>To: 01-0113-7356-00</td>
+        <td></td>
+        <td>$20.00</td>
+        <td>$386,890.95</td>
+        </tr>
+        <tr>
+        <td>08 Dec 2025</td>
+        <td>Credit Interest Paid</td>
+        <td></td>
+        <td>$3.30</td>
+        <td></td>
+        <td>$386,910.95</td>
+        </tr>
+        <tr>
+        <td>08 Dec 2025</td>
+        <td>Monthly Deposit</td>
+        <td>From: 01-0113-7356-00</td>
+        <td>$200.00</td>
+        <td></td>
+        <td>$386,907.65</td>
+        </tr>
+        <tr>
+        <td>01 Dec 2025</td>
+        <td>Bank Fee</td>
+        <td>Monthly Account Fee</td>
+        <td></td>
+        <td>$5.00</td>
+        <td>$386,902.65</td>
+        </tr>
+        <tr>
+        <td>25 Nov 2025</td>
+        <td>Interest</td>
+        <td>Quarterly Interest Payment</td>
+        <td>$45.25</td>
+        <td></td>
+        <td>$386,907.65</td>
+        </tr>
+        <tr>
+        <td>15 Nov 2025</td>
+        <td>Transfer</td>
+        <td>Gift from Family<br>From: 01-0222-9988-33</td>
+        <td>$500.00</td>
+        <td></td>
+        <td>$386,862.40</td>
+        </tr>
+        <tr>
+        <td>10 Nov 2025</td>
+        <td>Transfer</td>
+        <td>Investment Contribution<br>To: 01-0555-4422-77</td>
+        <td></td>
+        <td>$1,000.00</td>
+        <td>$386,362.40</td>
+        </tr>
+        <tr>
+        <td>01 Nov 2025</td>
+        <td>Interest</td>
+        <td>Monthly Interest Payment</td>
+        <td>$42.75</td>
+        <td></td>
+        <td>$387,362.40</td>
+        </tr>
+        <tr>
+        <td>18 Oct 2025</td>
+        <td>Transfer</td>
+        <td>Salary Top-Up<br>From: 01-0113-7356-00</td>
+        <td>$1,200.00</td>
+        <td></td>
+        <td>$387,319.65</td>
+        </tr>
+        <tr>
+        <td>05 Oct 2025</td>
+        <td>Government Payment</td>
+        <td>Tax Refund</td>
+        <td>$350.00</td>
+        <td></td>
+        <td>$386,119.65</td>
+        </tr>
+        <tr>
+        <td>01 Oct 2025</td>
+        <td>Interest</td>
+        <td>Monthly Interest Payment</td>
+        <td>$40.00</td>
+        <td></td>
+        <td>$385,769.65</td>
+        </tr>
+        <tr>
+  <td>20 Sep 2025</td>
+  <td>Transfer</td>
+  <td>Salary Top-Up<br>From: 01-0113-7356-00</td>
+  <td>$1,500.00</td>
+  <td></td>
+  <td>$385,769.65</td>
+</tr>
+<tr>
+  <td>15 Sep 2025</td>
+  <td>Interest</td>
+  <td>Monthly Interest Payment</td>
+  <td>$38.50</td>
+  <td></td>
+  <td>$384,269.65</td>
+</tr>
+<tr>
+  <td>10 Sep 2025</td>
+  <td>Transfer</td>
+  <td>Investment Contribution<br>To: 01-0555-4422-77</td>
+  <td></td>
+  <td>$1,000.00</td>
+  <td>$384,231.15</td>
+</tr>
+<tr>
+  <td>05 Sep 2025</td>
+  <td>Government Payment</td>
+  <td>Tax Refund</td>
+  <td>$400.00</td>
+  <td></td>
+  <td>$385,231.15</td>
+</tr>
+<tr>
+  <td>01 Sep 2025</td>
+  <td>Interest</td>
+  <td>Monthly Interest Payment</td>
+  <td>$37.25</td>
+  <td></td>
+  <td>$384,831.15</td>
+</tr>
+<tr>
+  <td>28 Aug 2025</td>
+  <td>Transfer</td>
+  <td>Gift from Family<br>From: 01-0222-9988-33</td>
+  <td>$500.00</td>
+  <td></td>
+  <td>$384,793.90</td>
+</tr>
+<tr>
+  <td>20 Aug 2025</td>
+  <td>Bank Fee</td>
+  <td>Monthly Account Fee</td>
+  <td></td>
+  <td>$5.00</td>
+  <td>$384,293.90</td>
+</tr>
+<tr>
+  <td>15 Aug 2025</td>
+  <td>Interest</td>
+  <td>Monthly Interest Payment</td>
+  <td>$36.80</td>
+  <td></td>
+  <td>$384,298.90</td>
+</tr>
+<tr>
+  <td>10 Aug 2025</td>
+  <td>Transfer</td>
+  <td>Investment Contribution<br>To: 01-0555-4422-77</td>
+  <td></td>
+  <td>$1,000.00</td>
+  <td>$384,262.10</td>
+</tr>
+<tr>
+  <td>01 Aug 2025</td>
+  <td>Interest</td>
+  <td>Monthly Interest Payment</td>
+  <td>$35.75</td>
+  <td></td>
+  <td>$385,262.10</td>
+</tr>
+
+
+
+      </tbody>
+    </table>
+  </main>
+
+  <!-- Quick Transfer modal2 -->
+  <div class="modal2-backdrop" id="modal2Backdrop">
+    <div class="modal2">
+      <span class="close-btn" id="closemodal2Btn">×</span>
+      <h2>Quick transfer</h2>
+      <form id="transferForm">
+        <label for="fromAccount">From *</label>
+        <select id="fromAccount" required>
+          <option value="">Please select an account</option>
+          <option value="savings">Savings Account - 01-0113-6381-10</option>
+          <option value="checking">Checking Account - 01-0113-7356-00</option>
+        </select>
+
+        <label for="toAccount">To *</label>
+        <select id="toAccount" required>
+          <option value="">Please select an account</option>
+          <option value="savings">Savings Account - 01-0113-6381-10</option>
+          <option value="checking">Checking Account - 01-0113-7356-00</option>
+        </select>
+
+        <label for="amount">Amount *</label>
+        <input type="number" id="amount" placeholder="$" required min="0" step="0.01">
+
+        <label for="reference">Reference</label>
+        <input type="text" id="reference" maxlength="36" placeholder="Reference">
+
+        <div class="buttons">
+          <button type="submit" class="transfer-btn">Transfer</button>
+          <button type="button" class="cancel-btn" id="cancelBtn">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const quickTransferBtn = document.getElementById('quickTransferBtn');
+    const modal2Backdrop = document.getElementById('modal2Backdrop');
+    const closemodal2Btn = document.getElementById('closemodal2Btn');
+    const cancelBtn = document.getElementById('cancelBtn');
+
+    function openmodal2() { modal2Backdrop.style.display = 'flex'; }
+    function closemodal2() { modal2Backdrop.style.display = 'none'; }
+
+    quickTransferBtn.addEventListener('click', openmodal2);
+    closemodal2Btn.addEventListener('click', closemodal2);
+    cancelBtn.addEventListener('click', closemodal2);
+
+    // Close modal2 on backdrop click
+    modal2Backdrop.addEventListener('click', (e) => {
+      if (e.target === modal2Backdrop) closemodal2();
+    });
+
+    // Handle form submission
+    document.getElementById('transferForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      const from = document.getElementById('fromAccount').value;
+      const to = document.getElementById('toAccount').value;
+      const amount = document.getElementById('amount').value;
+      const reference = document.getElementById('reference').value;
+      alert(`Transfer Details:\nFrom: ${from}\nTo: ${to}\nAmount: $${amount}\nReference: ${reference}`);
+      closemodal2();
+    });
+  </script>
+</body>
+</html>

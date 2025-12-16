@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Online Banking — Dashboard (UI Only)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --blue-900:#003b5c;
+      --blue-800:#005f8f;
+      --blue-700:#0077b6;
+      --blue-100:#e8f2f9;
+      --ink-900:#0f172a;
+      --ink-700:#334155;
+      --ink-500:#64748b;
+      --ink-300:#cbd5e1;
+      --surface:#ffffff;
+      --bg:#f6f9fc;
+      --radius:12px;
+      --radius-sm:8px;
+      --shadow:0 1px 2px rgba(0,0,0,.04),0 6px 16px rgba(0,0,0,.08);
+    }
+
+    * { box-sizing:border-box; }
+    html,body { height:100%; }
+    body {
+      margin:0;
+      font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--ink-900);
+      background:var(--bg);
+    }
+
+    /* Top bar & nav same as before */
+    .topbar {
+      background:linear-gradient(0deg,var(--blue-800),var(--blue-900));
+      color:#fff;
+    }
+    .topbar-inner {
+      max-width:1200px;
+      margin:0 auto;
+      padding:14px 20px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+    }
+    .brand {
+      display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.3px;
+    }
+    .brand-badge {
+      width:250px;height:32px;border-radius:6px;
+    }
+    .top-actions button {
+      background:#198abe;border:none;color:#fff;font-weight:600;
+      padding:10px 14px;border-radius:8px;cursor:pointer;
+    }
+
+    /* Nav */
+    .nav {
+      background:var(--blue-700);
+    }
+    .nav-inner {
+      max-width:1200px;margin:0 auto;padding:0 20px;display:flex;gap:22px;
+    }
+    .nav a {
+      color:#e6f4ff;text-decoration:none;padding:14px 0;font-weight:500;
+      border-bottom:3px solid transparent;
+    }
+    .nav a.active { border-bottom-color:#7dd3fc; }
+
+    /* Page */
+    .page {
+      max-width:1200px;margin:0 auto;padding:28px 20px 80px;
+    }
+    .page-header {
+      display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;
+    }
+    .page-header h1 { margin:0;font-size:28px; }
+    .header-actions { display:flex;gap:12px; }
+    .btn {
+      border-radius:8px;border:1px solid var(--blue-700);background:#fff;color:var(--blue-700);
+      padding:10px 14px;font-weight:600;cursor:pointer;
+    }
+    .btn.primary { background:var(--blue-700); color:#fff; }
+
+    /* Info banner */
+    .banner {
+      background:#fff;border:1px solid var(--ink-300);border-left:4px solid var(--blue-700);
+      border-radius:var(--radius);padding:16px 18px;display:flex;gap:14px;align-items:flex-start;
+      box-shadow:var(--shadow);margin:18px 0 26px;
+    }
+    .banner .icon {
+      width:22px;height:22px;border-radius:50%;background:var(--blue-100);
+      display:grid;place-items:center;color:var(--blue-700);font-weight:700;
+    }
+    .banner p { margin:0;color:var(--ink-700);line-height:1.5; }
+    .banner a { color:var(--blue-700); text-decoration:none; font-weight:600; }
+
+    /* Accounts list */
+    .section-title {
+      display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;
+      color:var(--ink-700);font-weight:600;
+    }
+    .accounts {
+      background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);
+    }
+    .account {
+      display:grid;grid-template-columns:56px 1fr auto;gap:16px;align-items:center;
+      padding:18px 20px;border-top:1px solid var(--ink-300);
+    }
+    .account:first-child { border-top:none; }
+    .avatar {
+      width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#bae6fd,#7dd3fc);
+    }
+    .acc-main { display:flex;flex-direction:column;gap:6px; }
+    .acc-name { font-weight:600; }
+    .acc-meta { color:var(--ink-500); font-size:13px; }
+    .acc-actions a { color:var(--blue-700); text-decoration:none; font-weight:600; }
+    .acc-balance { text-align:right; }
+    .acc-balance .amt { font-size:18px; font-weight:700; }
+    .acc-balance .sub { color:var(--ink-500); font-size:13px; }
+
+    /* Footer help bar */
+    .head{
+      font-weight: 700;
+      font-size: 18px;
+    }
+    .help {
+      margin-top:28px;background:var(--blue-700);color:#e6f4ff;border-radius:var(--radius);
+      padding:18px 20px;font-weight:400;
+      font-size: 12px;
+    }
+
+    @media (max-width: 720px) {
+      .nav-inner { overflow:auto; }
+      .account { grid-template-columns:44px 1fr; }
+      .acc-balance { grid-column:1 / -1; text-align:left; }
+    }
+
+	/* =========================
+   Terms Agreement Modal
+   ========================= */
+	.modal-backdrop {
+	position: fixed;
+	inset: 0;
+	background: rgba(15, 23, 42, 0.65);
+	backdrop-filter: blur(4px);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 9999;
+	}
+
+	.modal {
+	background: #fff;
+	width: 92%;
+	max-width: 460px;
+	border-radius: 14px;
+	box-shadow: 0 20px 40px rgba(0,0,0,.25);
+	padding: 22px 22px 18px;
+	}
+
+	.modal h2 {
+	margin: 0 0 10px;
+	font-size: 20px;
+	}
+
+	.modal p {
+	margin: 0 0 12px;
+	color: var(--ink-700);
+	line-height: 1.5;
+	font-size: 14px;
+	}
+
+	.modal ul {
+	padding-left: 18px;
+	margin: 10px 0 14px;
+	font-size: 14px;
+	color: var(--ink-700);
+	}
+
+	.modal ul li {
+	margin-bottom: 6px;
+	}
+
+	.modal .terms {
+	font-size: 13px;
+	color: var(--ink-500);
+	margin-bottom: 14px;
+	}
+
+	.modal .terms a {
+	color: var(--blue-700);
+	text-decoration: none;
+	font-weight: 600;
+	}
+
+	.modal-actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 10px;
+	}
+
+	.modal-actions button {
+	padding: 10px 14px;
+	border-radius: 8px;
+	font-weight: 600;
+	cursor: pointer;
+	border: none;
+	}
+
+	.modal-actions .decline {
+	background: #e5e7eb;
+	color: #111827;
+	}
+
+	.modal-actions .accept {
+	background: var(--blue-700);
+	color: #fff;
+	opacity: .5;
+	}
+
+	.modal-actions .accept.enabled {
+	opacity: 1;
+	}
+
+  </style>
+</head>
+<!-- Terms Agreement Modal -->
+<div class="modal-backdrop" id="tosModal">
+  <div class="modal">
+    <h2>Terms of Service</h2>
+    <p>
+      Before continuing, please confirm that you understand and agree to the
+      following important conditions:
+    </p>
+
+    <ul>
+      <li>You acknowledge this service may not behave as expected</li>
+      <li>You agree to waste a non‑recoverable amount of your own time</li>
+      <li>You understand no real money exists on this website</li>
+      <li>You accept that proceeding was entirely your decision</li>
+      <li>You agree to face more-than-mild disappointment</li>
+    </ul>
+
+    <div class="terms">
+      <label>
+        <input type="checkbox" id="agreeCheck">
+        I have read and agree to the
+        <a href="/terms.txt" target="_blank">Terms &amp; Conditions</a>
+      </label>
+    </div>
+
+    <div class="modal-actions">
+      <button class="decline" onclick="location.reload()">Decline</button>
+      <button class="accept" id="acceptBtn" disabled>Agree &amp; Continue</button>
+    </div>
+  </div>
+</div>
+<script>
+  const checkbox = document.getElementById('agreeCheck');
+  const acceptBtn = document.getElementById('acceptBtn');
+  const modal = document.getElementById('tosModal');
+
+  checkbox.addEventListener('change', () => {
+    acceptBtn.disabled = !checkbox.checked;
+    acceptBtn.classList.toggle('enabled', checkbox.checked);
+  });
+
+  acceptBtn.addEventListener('click', () => {
+    modal.style.display = 'none';
+  });
+  function agree(){
+    console.log('SCAMMER!!')
+    modal.style.display = 'flex';
+  }
+</script>
+
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <img class="brand-badge" src="https://secure.anz.co.nz/include/assets/img/svg/brand/anz_logo_gradient.svg"></img></div>
+      <div class="top-actions"><button>Log off</button></div>
+    </div>
+    <nav class="nav">
+      <div class="nav-inner">
+        <a class="active" href="#">Home</a>
+        <a href="#">Your accounts</a>
+        <a href="/savings.html">Pay & transfer</a>
+        <a href="#">Apply & open</a>
+        <a href="#">Settings</a>
+        <a href="#">Documents</a>
+        <a href="#">Messages</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="page">
+	
+    <div class="page-header">
+      <h1>Your accounts</h1>
+      <div class="header-actions">
+        <button class="btn">Personalise</button>
+        <button class="btn primary" onclick="document.location.href = '/savings.html'">Quick transfer</button>
+      </div>
+    </div>
+
+    <div class="banner">
+      <div class="icon">i</div>
+      <p>
+        To help protect your money, we may collect behavioural and device information when you use this service.
+        This is used for security purposes only. <a href="#">Learn more</a>.
+      </p>
+    </div>
+
+    <div class="section-title">
+      <span>Current and savings</span>
+      <span>Balances</span>
+    </div>
+
+    <section class="accounts">
+      <div class="account">
+        <img class="avatar" src="https://secure.anz.co.nz/image-cache/product-images/current/v2/ib-account-circle.png"></img>
+        <div class="acc-main">
+          <div class="acc-name">Everyday Account</div>
+          <div class="acc-meta">01-0113-7356-00</div>
+          <div class="acc-actions"><a href="/everyday.html">View recent transactions ▾</a></div>
+        </div>
+        <div class="acc-balance">
+          <div class="amt">$19,836.0</div>
+          <div class="sub">Available $19,836.0</div>
+        </div>
+      </div>
+
+      <div class="account">
+        <img class="avatar" src="https://secure.anz.co.nz/image-cache/product-images/current/v2/ib-account-circle.png"></img>
+        <div class="acc-main">
+          <div class="acc-name">Savings Account</div>
+          <div class="acc-meta">01-0113-6381-10</div>
+          <div class="acc-actions"><a href="/savings.html">View recent transactions ▾</a></div>
+        </div>
+        <div class="acc-balance">
+          <div class="amt">$386,890.95 </div>
+          <div class="sub">Available $386,890.95 </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="help"><div class="head">How can we help?</div>
+      <br>
+      If you have any questions, our team is available from 8am to 8pm (NZT) on weekdays, and 8am to 6pm (NZT) on weekends.
+      <br><br>
+    New Zealand<br>
+    0800 269 296
+      <br><br>
+    From overseas<br>
+    +64 4 470 3142
+<br><br>
+    Bank mail<br>
+    Send a message
+<br><br>
+    Locate us<br>
+    Find a branch
+<br><br>
+    Current time 14 Dec 2025 12:03 NZT<br>
+    Last logon 14 Dec 2025 11:59 NZT
+<br><br>
+    Electronic Banking Conditions ANZ Privacy Statement Help & Support <br><br>
+
+Copyright 2025 © ANZ Bank New Zealand Limited. All rights reserved.
+    </div>
+  </main>
+</body>
+</html>
