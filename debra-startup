@@ -1,0 +1,14 @@
+ssh debra@127.0.0.1 -p 2222
+python -m http.server 5500 --bind 127.0.0.1
+cd C:\caddy
+caddy run
+
+
+Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0; Start-Service sshd; Set-Service sshd -StartupType Automatic; New-NetFirewallRule -Name sshd -DisplayName "OpenSSH Server" -Enabled True -Direction Inbound -Protocol TCP -Action Allow -LocalPort 22; 
+(gc "$env:ProgramData\ssh\sshd_config") `
+-replace '^#?PasswordAuthentication\s+yes','PasswordAuthentication no' `
+-replace '^#?PubkeyAuthentication\s+no','PubkeyAuthentication yes' |
+Set-Content "$env:ProgramData\ssh\sshd_config"
+Restart-Service sshd
+ipconfig
+

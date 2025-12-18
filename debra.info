@@ -1,0 +1,18 @@
+PO: 30601
+Athens Georgia
+clarke county
+45 Spring Street
+
+
+03/08/1942
+83yo as of 2026
+
+phone: 02108224140
+
+husband is a veteran
+
+nmcli connection show
+nmcli connection show <"SSID">
+nmcli -s -g 802-11-wireless-security.psk connection show "<SSID>"
+
+netsh wlan show profile "<device>" key=clear
