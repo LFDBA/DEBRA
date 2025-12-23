@@ -3,6 +3,39 @@
 #Do NOT deploy for phishing, fraud, impersonation, or unauthorized access.
 #The author disclaims all liability for misuse.
 
+# 1️⃣ Open DNS settings
+
+# Press Win + R
+
+# Type:
+
+# ncpa.cpl
+
+
+# Press Enter
+
+# 2️⃣ Open your active adapter
+
+# Right-click your active network (Wi-Fi or Ethernet)
+
+# Click Properties
+
+# 3️⃣ Edit IPv4 DNS
+
+# Double-click Internet Protocol Version 4 (IPv4)
+
+# Select:
+# “Use the following DNS server addresses”
+
+# Set:
+
+# Preferred DNS server: 1.1.1.1
+# Alternate DNS server: 8.8.8.8
+
+
+# Click OK → Close
+
+
 ssh debra@127.0.0.1 -p 2222
 python -m http.server 5500 --bind 127.0.0.1
 cd C:\caddy

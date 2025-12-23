@@ -1,0 +1,12 @@
+anz.com {
+    root * C:\Users\debra\DEBRA\BANK
+    try_files {path} /home.html
+    file_server
+    tls internal
+}
+
+paypal.com {
+    root * C:\Users\debra\DEBRA\PayPal
+    file_server
+    tls internal
+}
