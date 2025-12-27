@@ -36,8 +36,8 @@
 # Click OK → Close
 
 netsh interface portproxy add v4tov4 `
-    listenaddress=127.0.0.1 listenport=2222 `
-    connectaddress=<debra ip> connectport=22
+listenaddress=127.0.0.1 listenport=2222 `
+connectaddress=<debra ip> connectport=22
 
 ssh debra@127.0.0.1 -p 2222
 cd C:\caddy
