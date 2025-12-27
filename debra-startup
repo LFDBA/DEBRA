@@ -35,9 +35,11 @@
 
 # Click OK → Close
 
+netsh interface portproxy add v4tov4 `
+    listenaddress=127.0.0.1 listenport=2222 `
+    connectaddress=<debra ip> connectport=22
 
 ssh debra@127.0.0.1 -p 2222
-python -m http.server 5500 --bind 127.0.0.1
 cd C:\caddy
 caddy run
 
